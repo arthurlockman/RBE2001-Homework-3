@@ -13,6 +13,7 @@
  * @created  9/16/2014
  * @modified 9/19/2014 
  */
+
 #include "TimerOne.h" //Including the TimerOne library.
 #include "LiquidCrystal.h" //Including LiquidCrystal Library
 #include "Arduino.h" //Including arduino core
@@ -57,8 +58,8 @@ void updateTimer()
  */
 void updateDisplay()
 {
-	lcd.setCursor(0,1);
-	lcd.print(convertToTime(time));
+	lcd.setCursor(0,1); //Set cursor to beginning
+	lcd.print(convertToTime(time)); //Write time to display
 }
 
 /**
@@ -74,6 +75,47 @@ String convertToTime(int timerCount)
 {
 	String result = "";
 	int hours = timerCount / 3600;
-
+	timerCount -= hours * 3600;
+	int minutes = timerCount / 60;
+	timerCount -= minutes * 60;
+	int seconds = timerCount;
+	if (digits(hours) == 1) result += "0";
+	result += hours;
+	result += ":";
+	if (digits(minutes) == 1) result += "0";
+	result += minutes;
+	result += ":";
+	if (digits(seconds) == 1) result += "0";
+	result += seconds;
 	return result;
+}
+
+/**
+ * @brief Get number of digits in number.
+ * @details Get the number of digits in an 
+ * integer. This is needed to add padding 
+ * to the numbers in the clock.
+ * 
+ * @param number The number to size.
+ * @return The number of digits in number.
+ */
+int digits(int number)
+{
+	int i = 1;
+	int counter = 1;
+	bool flag = false;
+	while (!flag)
+	{
+		if (number >= i) 
+		{
+			return counter;
+			flag = true;
+		}
+		else
+		{
+			i = i * 10;
+			counter++;
+		}
+	}
+	return counter;
 }
