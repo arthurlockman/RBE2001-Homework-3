@@ -7,7 +7,7 @@
  * control the clock based on timer interrupts. It also has
  * the ability to use a button to reset the clock to 00:00:00.
  * 
- * Digital Pin 3 is used for the button interrupt.
+ * Digital Pin 2 is used for the button interrupt.
  * 
  * @author   Arthur Lockman
  * @created  9/16/2014
@@ -20,36 +20,31 @@
 
 #define INT0 2 //Digital 2
 #define INT1 3 //Digital 3
-#define PIN_RS 13
-#define PIN_E 12
-#define PIN_DB4 11
-#define PIN_DB5 10
-#define PIN_DB6 9
-#define PIN_DB7 8
 
 //@TODO: Fix this line
-LiquidCrystal lcd(PIN_RS, PIN_E, PIN_DB4, PIN_DB5, PIN_DB6, PIN_DB7); //The LCD object that drives the display.
+LiquidCrystal lcd(11, 12, 6, 5, 4, 3); //The LCD object that drives the display.		
 volatile int time = 0; //The current time.
 
 static const long timerPeriod = 1000000; //The period for the timer update.
-static const int lcdRows = 2; //Number of rows in LCD display.
-static const int lcdCols = 16; //Number of columns in LCD display.
 
 void setup()
 {
 	Serial.begin(115200);
-	lcd.begin(lcdCols, lcdRows); //Initialize LCD display size.
+	lcd.begin(16, 2); //Initialize LCD display size.
+	lcd.clear();
 	Timer1.initialize(timerPeriod); //Set timer to update on set interval
 	Timer1.attachInterrupt(updateTimer); //Attach timer update routine
 	pinMode(INT0, INPUT_PULLUP); //Set pin to input.
 	attachInterrupt(0, resetTimer, FALLING); //Interrupt when the button drops low.
+	lcd.setCursor(0,1);
+	lcd.write("Hello, world!");
 }
 
 void loop()
 {
-	updateDisplay(); //Update the display
-	Serial.println(convertToTime(time));
-	delay(1000);
+	// updateDisplay(); //Update the display
+	// Serial.println(convertToTime(time));
+	delay(100);
 }
 
 /**
