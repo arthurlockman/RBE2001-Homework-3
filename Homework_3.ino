@@ -7,11 +7,17 @@
  * control the clock based on timer interrupts. It also has
  * the ability to use a button to reset the clock to 00:00:00.
  * 
- * Digital Pin 2 is used for the button interrupt.
+ * D2 : Button interrupt
+ * D3 : DB7
+ * D4 : DB6
+ * D5 : DB5
+ * D6 : DB4
+ * D11: RS
+ * D12: E
  * 
  * @author   Arthur Lockman
  * @created  9/16/2014
- * @modified 9/19/2014 
+ * @modified 9/18/2014 
  */
 
 #include "TimerOne.h" //Including the TimerOne library.
@@ -22,29 +28,24 @@
 #define INT1 3 //Digital 3
 
 //@TODO: Fix this line
-LiquidCrystal lcd(11, 12, 6, 5, 4, 3); //The LCD object that drives the display.		
+LiquidCrystal lcd(12, 11, 6, 5, 4, 3); //The LCD object that drives the display.		
 volatile int time = 0; //The current time.
 
 static const long timerPeriod = 1000000; //The period for the timer update.
 
 void setup()
 {
-	Serial.begin(115200);
 	lcd.begin(16, 2); //Initialize LCD display size.
-	lcd.clear();
+	lcd.clear(); //clear LCD
 	Timer1.initialize(timerPeriod); //Set timer to update on set interval
 	Timer1.attachInterrupt(updateTimer); //Attach timer update routine
 	pinMode(INT0, INPUT_PULLUP); //Set pin to input.
 	attachInterrupt(0, resetTimer, FALLING); //Interrupt when the button drops low.
-	lcd.setCursor(0,1);
-	lcd.write("Hello, world!");
 }
 
 void loop()
 {
-	// updateDisplay(); //Update the display
-	// Serial.println(convertToTime(time));
-	delay(100);
+	updateDisplay(); //Update the display
 }
 
 /**
@@ -54,7 +55,7 @@ void loop()
  */
 void resetTimer()
 {
-	time = 0;
+	time = 0; //reset timer to 0
 }
 
 /**
@@ -64,7 +65,7 @@ void resetTimer()
  */
 void updateTimer()
 {
-	time++;
+	time++; //increment timer by a second.
 }
 
 /**
@@ -74,7 +75,7 @@ void updateTimer()
  */
 void updateDisplay()
 {
-	lcd.setCursor(0,1); //Set cursor to beginning
+	lcd.setCursor(0,0); //Set cursor to beginning
 	lcd.print(convertToTime(time)); //Write time to display
 }
 
@@ -89,19 +90,19 @@ void updateDisplay()
  */
 String convertToTime(int timerCount)
 {
-	String result = "";
-	int hours = timerCount / 3600;
-	if (digits(hours) == 1) result += "0";
-	result += hours;
-	result += ":";
-	int minutes = (timerCount / 60) % 60;
-	if (digits(minutes) == 1) result += "0";
-	result += minutes;
-	result += ":";
-	int seconds = (timerCount % 60);
-	if (digits(seconds) == 1) result += "0";
-	result += seconds;
-	return result;
+	String result = ""; //create resultant string
+	int hours = timerCount / 3600; //find number of hours
+	if (digits(hours) == 1) result += "0"; //pad hours with 0
+	result += hours; //add hours to result
+	result += ":"; //add separator
+	int minutes = (timerCount / 60) % 60; //find number of minutes
+	if (digits(minutes) == 1) result += "0"; //pad minutes with 0
+	result += minutes; //add minutes to result
+	result += ":"; //add separator
+	int seconds = (timerCount % 60); //find number of seconds
+	if (digits(seconds) == 1) result += "0"; //pad seconds with 0
+	result += seconds; //add seconds to result
+	return result; //return result
 }
 
 /**
@@ -115,15 +116,15 @@ String convertToTime(int timerCount)
  */
 int digits(int number)
 {
-	if (number == 0) return 1;
+	if (number == 0) return 1; //0 has one digit
 	else
 	{
 		int digits = 0;
-		while (number) 
+		while (number) //divide by 10 until number is 0
 		{
 			number /= 10;
 			digits++;
 		}
-		return digits;
+		return digits; //return number of digits
 	}
 }
